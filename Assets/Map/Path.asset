@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
-  m_Name: Tile_Inside
+  m_Script: {fileID: 11500000, guid: 356eb2aae74aa430fbf519aa366f0c1e, type: 3}
+  m_Name: Path
   m_EditorClassIdentifier: 
-  m_DefaultSprite: {fileID: 0}
+  m_DefaultSprite: {fileID: -5111575295794188215, guid: 2afd1fd2be90d0044a83cd4b14579c2d, type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1
   m_TilingRules: []
+  wallTiles: []
