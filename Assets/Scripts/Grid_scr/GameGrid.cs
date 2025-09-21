@@ -1,15 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameGrid
 {
     private int width, height;
-
     private GridObject[,] gridObjects;
 
     public int Width => width;
     public int Height => height;
+    public GridObject[,] GetGridObjects() => gridObjects;
 
     public GameGrid(int width, int height)
     {
@@ -31,6 +29,4 @@ public class GameGrid
             }
         }
     }
-
-    public GridObject[,] GetGridObjects() => gridObjects;
 }

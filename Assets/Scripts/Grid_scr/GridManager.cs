@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -29,10 +30,40 @@ public class GridManager : MonoBehaviour
     private void InitializeGrid()
     {
         if (tilemap == null) { return; }
+        tilemap.CompressBounds();
+
         grid = new GameGrid(tilemap.size.x, tilemap.size.y);
         gridRenderer = new GridRenderer(tilemap.origin);
+
+        foreach (GridObject gridObject in grid.GetGridObjects())
+        {
+            int xPos = gridObject.GetCellPosition.x;
+            int yPos = gridObject.GetCellPosition.y;
+            Vector3 objectWorldPosition = gridRenderer.GetWorldPosition(xPos, yPos);
+
+            int xVal = Mathf.FloorToInt(objectWorldPosition.x);
+            int yVal = Mathf.FloorToInt(objectWorldPosition.y);
+            TileBase tile = tilemap.GetTile(new Vector3Int(xVal, yVal, 0));
+
+            if (tile == null) { continue; }
+
+            Type tileType = tile.GetType();
+
+            if (tileType == typeof(Wall))
+            {
+                gridObject.Type = GridObjectType.Wall;
+                Debug.Log("Wall");
+            }
+
+            if (tileType == typeof(Path))
+            {
+                gridObject.Type = GridObjectType.Path;
+                Debug.Log("Path");
+            }
+        }
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (tilemap == null || grid == null || showGrid == false) { return; }
@@ -85,6 +116,7 @@ public class GridManager : MonoBehaviour
         Gizmos.DrawLine(finalStartHorizontal, finalEndHorizontal);
     }
 
+#endif
     public void RegenerateGrid() => InitializeGrid();
 
     public void ToggleVisibility() => showGrid = !showGrid;

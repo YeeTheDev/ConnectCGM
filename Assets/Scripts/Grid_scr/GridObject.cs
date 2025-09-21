@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GridObject
@@ -7,6 +5,7 @@ public class GridObject
     private Vector2Int cellPosition;
 
     public Vector2Int GetCellPosition => cellPosition;
+    public GridObjectType Type { get; set; } = GridObjectType.Empty;
 
     public GridObject(Vector2Int cellPosition)
     {
@@ -18,3 +17,5 @@ public class GridObject
         return "GridObject: " + cellPosition;
     }
 }
+
+public enum GridObjectType { Wall, Path, Empty }
