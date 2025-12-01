@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class GridObject
 {
-    private Vector2Int cellPosition;
+    private GridCell cellPosition;
 
-    public Vector2Int GetCellPosition => cellPosition;
+    public GridCell GetCellPosition => cellPosition;
     public GridObjectType Type { get; set; } = GridObjectType.Empty;
 
-    public GridObject(Vector2Int cellPosition)
+    public GridObject(GridCell cellPosition)
     {
         this.cellPosition = cellPosition;
     }

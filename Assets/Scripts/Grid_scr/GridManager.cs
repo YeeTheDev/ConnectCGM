@@ -4,10 +4,9 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 [ExecuteAlways]
-public class GridManager : MonoBehaviour
+public partial class GridManager : MonoBehaviour
 {
-    private static GridManager instance;
-    public static GridManager Instance = instance;
+    public static GridManager Instance;
 
     [SerializeField] private Tilemap tilemap;
 
@@ -17,12 +16,12 @@ public class GridManager : MonoBehaviour
 
     private void Awake()
     {
-        if(instance != null && instance != this)
+        if(Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
-        instance = this;
+        Instance = this;
 
         InitializeGrid();
     } 
@@ -33,13 +32,13 @@ public class GridManager : MonoBehaviour
         tilemap.CompressBounds();
 
         grid = new GameGrid(tilemap.size.x, tilemap.size.y);
-        gridRenderer = new GridRenderer(tilemap.origin);
+        gridRenderer = new GridRenderer(tilemap.origin, grid);
 
         foreach (GridObject gridObject in grid.GetGridObjects())
         {
-            int xPos = gridObject.GetCellPosition.x;
-            int yPos = gridObject.GetCellPosition.y;
-            Vector3 objectWorldPosition = gridRenderer.GetWorldPosition(xPos, yPos);
+            int xPos = gridObject.GetCellPosition.X;
+            int yPos = gridObject.GetCellPosition.Y;
+            Vector3 objectWorldPosition = gridRenderer.GetWorldPosition(new GridCell(xPos, yPos));
 
             int xVal = Mathf.FloorToInt(objectWorldPosition.x);
             int yVal = Mathf.FloorToInt(objectWorldPosition.y);
@@ -52,13 +51,11 @@ public class GridManager : MonoBehaviour
             if (tileType == typeof(Wall))
             {
                 gridObject.Type = GridObjectType.Wall;
-                Debug.Log("Wall");
             }
 
             if (tileType == typeof(Path))
             {
                 gridObject.Type = GridObjectType.Path;
-                Debug.Log("Path");
             }
         }
     }
@@ -74,11 +71,11 @@ public class GridManager : MonoBehaviour
 
         foreach (GridObject gridObject in gridObjects)
         {
-            int cellPosX = gridObject.GetCellPosition.x;
-            int cellPosy = gridObject.GetCellPosition.y;
+            int cellPosX = gridObject.GetCellPosition.X;
+            int cellPosy = gridObject.GetCellPosition.Y;
 
-            int xPos = (int)gridRenderer.GetWorldPosition(cellPosX, cellPosy).x;
-            int yPos = (int)gridRenderer.GetWorldPosition(cellPosX, cellPosy).y;
+            int xPos = (int)gridRenderer.GetWorldPosition(gridObject.GetCellPosition).x;
+            int yPos = (int)gridRenderer.GetWorldPosition(gridObject.GetCellPosition).y;
 
             Vector3 startVertical = new Vector3(xPos, yPos);
             Vector3 endVertical = new Vector3(xPos, yPos + 1);
@@ -88,21 +85,33 @@ public class GridManager : MonoBehaviour
             Vector3 endHorizontal = new Vector3(xPos + 1, yPos);
             Gizmos.DrawLine(startHorizontal, endHorizontal);
 
-            GUIStyle textStyle = new GUIStyle();
-            textStyle.normal.textColor = Color.white;
-            textStyle.alignment = TextAnchor.MiddleCenter;
-
             Vector3 cellCenter = new Vector3(xPos + 0.5f, yPos + 0.5f);
-            Handles.Label(cellCenter, text: $"{cellPosX}, {cellPosy}", textStyle);
+
+            if (gridObject.Type == GridObjectType.Wall)
+            {
+                GUIStyle textStyle = new GUIStyle();
+                textStyle.fontSize = 12;
+                textStyle.normal.textColor = Color.green;
+                textStyle.fontStyle = FontStyle.Bold;
+                textStyle.alignment = TextAnchor.MiddleCenter;
+                Handles.Label(cellCenter, text: $"Wall", textStyle);
+            }
+            else
+            {
+                GUIStyle textStyle = new GUIStyle();
+                textStyle.normal.textColor = Color.white;
+                textStyle.alignment = TextAnchor.MiddleCenter;
+                Handles.Label(cellCenter, text: $"{cellPosX},{cellPosy}", textStyle);
+            }
         }
 
         int tilemapWidth = grid.Width;
         int tilemapHeight = grid.Height;
 
-        Vector3 tilemapEndWorldSpace = gridRenderer.GetWorldPosition(tilemapWidth, tilemapHeight);
+        Vector3 tilemapEndWorldSpace = gridRenderer.GetWorldPosition(new GridCell(tilemapWidth, tilemapWidth));
 
-        float originWorldSpaceX = gridRenderer.GetWorldPosition(0, 0).x;
-        float originWorldSpaceY = gridRenderer.GetWorldPosition(0, 0).y;
+        float originWorldSpaceX = gridRenderer.GetWorldPosition(new GridCell(0, 0)).x;
+        float originWorldSpaceY = gridRenderer.GetWorldPosition(new GridCell(0, 0)).y;
 
         float widthWorldSpace = tilemapEndWorldSpace.x;
         float heightWorldSpace = tilemapEndWorldSpace.y;
